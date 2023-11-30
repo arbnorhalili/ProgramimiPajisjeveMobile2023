@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(@Nullable Context context) {
-        super(context, "FiekDB", null, 2);
+        super(context, "FiekDB", null, 3);
     }
 
     @Override
@@ -31,8 +31,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("Insert into Perdoruesit(Name,Username,Password,Address) " +
-                "values (" +
-                "'Filan Gashi','gashi@gmail.com','123','Peje')");
+//        sqLiteDatabase.execSQL("Insert into Perdoruesit(Name,Username,Password,Address) " +
+//                "values (" +
+//                "'Filan Gashi','gashi@gmail.com','123','Peje')");
+        sqLiteDatabase.execSQL("CREATE UNIQUE INDEX ux_username ON Perdoruesit(Username);");
     }
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:gravity="center_vertical">
+
+
+    <ImageView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imgIcon"></ImageView>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:id="@+id/tvName"
+        android:layout_below="@id/imgIcon"
+        ></TextView>
+
+    <EditText android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etName"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:layout_below="@id/tvName"></EditText>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:layout_below="@id/etName"
+        android:id="@+id/tvUsername1"></TextView>
+
+    <EditText android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvUsername1"
+        android:id="@+id/etUsername1"
+        android:imeOptions="actionNext"
+        android:inputType="textEmailAddress"></EditText>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:layout_below="@id/etUsername1"
+        android:id="@+id/tvPw"></TextView>
+
+    <EditText android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvPw"
+        android:id="@+id/etPw"
+        android:imeOptions="actionNext"
+        android:inputType="textPassword"></EditText>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Address"
+        android:layout_below="@id/etPw"
+        android:id="@+id/tvUsername"
+        tools:ignore="NotSibling"></TextView>
+
+    <EditText android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvUsername"
+        android:id="@+id/etAddress"
+        android:imeOptions="actionNext"
+        android:inputType="textEmailAddress"></EditText>
+
+    <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:layout_below="@id/etAddress"
+        android:layout_alignParentRight="true"
+        android:id="@+id/btnRegister"></Button>
+
+</RelativeLayout>
