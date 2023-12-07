@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,21 +20,32 @@ public class MainActivity extends AppCompatActivity {
 
     String strUsername = "";
     TextView tvWelcome;
+    ListView lvUsers;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvWelcome = findViewById(R.id.tvWelcome);
 
-        if(getIntent().hasExtra("Username"))
-        {
-            strUsername = getIntent().getExtras().getString("Username");
-//            Toast.makeText(MainActivity.this,
-//                    "Mire se erdhe, "+strUsername,
-//                    Toast.LENGTH_SHORT).show();
-            tvWelcome.setText("Mire se erdhe, "+
-                    strUsername);
-        }
+        lvUsers = findViewById(R.id.lvUsers);
+
+        User user1 = new User(1,"Filan Fisteku","filan@gmail.com", "Test");
+        User user2 = new User(2, "Filan Gashi", "gashi@gmail.com", "Test");
+
+        UserAdapter userAdapter = new UserAdapter(MainActivity.this);
+        userAdapter.userList.add(user1);
+        userAdapter.userList.add(user2);
+        lvUsers.setAdapter(userAdapter);
+//        tvWelcome = findViewById(R.id.tvWelcome);
+//
+//        if(getIntent().hasExtra("Username"))
+//        {
+//            strUsername = getIntent().getExtras().getString("Username");
+////            Toast.makeText(MainActivity.this,
+////                    "Mire se erdhe, "+strUsername,
+////                    Toast.LENGTH_SHORT).show();
+//            tvWelcome.setText("Mire se erdhe, "+
+//                    strUsername);
+//        }
     }
 
     @Override

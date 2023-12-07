@@ -8,11 +8,9 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/tvWelcome"
-        android:text="Test"
-        android:gravity="center"></TextView>
+        android:id="@+id/lvUsers"></ListView>
 
 </LinearLayout>
