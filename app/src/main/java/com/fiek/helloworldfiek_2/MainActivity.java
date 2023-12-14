@@ -1,51 +1,69 @@
 package com.fiek.helloworldfiek_2;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     String strUsername = "";
     TextView tvWelcome;
     ListView lvUsers;
+    UserAdapter userAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         lvUsers = findViewById(R.id.lvUsers);
+        userAdapter = new UserAdapter(MainActivity.this);
 
-        User user1 = new User(1,"Filan Fisteku","filan@gmail.com", "Test");
-        User user2 = new User(2, "Filan Gashi", "gashi@gmail.com", "Test");
-
-        UserAdapter userAdapter = new UserAdapter(MainActivity.this);
-        userAdapter.userList.add(user1);
-        userAdapter.userList.add(user2);
         lvUsers.setAdapter(userAdapter);
-//        tvWelcome = findViewById(R.id.tvWelcome);
-//
-//        if(getIntent().hasExtra("Username"))
-//        {
-//            strUsername = getIntent().getExtras().getString("Username");
-////            Toast.makeText(MainActivity.this,
-////                    "Mire se erdhe, "+strUsername,
-////                    Toast.LENGTH_SHORT).show();
-//            tvWelcome.setText("Mire se erdhe, "+
-//                    strUsername);
-//        }
+
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                GetUsersFromDb();
+//            }
+//        };
+//        Thread thread = new Thread(runnable);
+//        thread.start();
+        new LoadData().execute();
+        lvUsers.setOnItemClickListener(this);
+        lvUsers.setOnItemLongClickListener(this);
+//        lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Toast.makeText(MainActivity.this,
+//                        "Klikuar: "+userAdapter.userList.get(i).getName(),
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        lvUsers.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Toast.makeText(MainActivity.this,
+//                        "LongClick: "+userAdapter.userList.get(i).getName(),
+//                        Toast.LENGTH_SHORT).show();
+//                return false;
+//            }
+//        });
     }
 
     @Override
@@ -63,5 +81,91 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         return true;
+    }
+
+    private void GetUsersFromDb()
+    {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        SQLiteDatabase objDb = (new DatabaseHelper(MainActivity.this)).getReadableDatabase();
+        Cursor cursor = objDb.query("Perdoruesit",
+                new String[]{"Id", "Name", "Username", "Address"},
+                "",
+                new String[]{},
+                "",
+                "",
+                "");
+        if(cursor.getCount()>0)
+        {
+            cursor.moveToFirst();
+            while(cursor.isAfterLast()==false)
+            {
+                User tempUser = new User(cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3));
+                userAdapter.userList.add(tempUser);
+                cursor.moveToNext();
+            }
+            cursor.close();
+
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    userAdapter.notifyDataSetChanged();
+//                }
+//            });
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Toast.makeText(MainActivity.this,
+                "Klikuar: "+userAdapter.userList.get(i).getName(),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Toast.makeText(MainActivity.this,
+                "LongClick: "+userAdapter.userList.get(i).getName(),
+                Toast.LENGTH_SHORT).show();
+        User tempUser = userAdapter.userList.get(i);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("A jeni i sigurte qe deshironi te fshini kete rekord?");
+        builder.setTitle("Kujdes!");
+        builder.setPositiveButton("Po", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                SQLiteDatabase objDb = (new DatabaseHelper(MainActivity.this)).getReadableDatabase();
+                objDb.delete("Perdoruesit","Id=?",
+                        new String[]{ tempUser.getId()+""});
+                userAdapter.userList.remove(tempUser);
+                userAdapter.notifyDataSetChanged();
+            }
+        });
+        builder.setNegativeButton("Jo", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        return false;
+    }
+
+    public class LoadData extends AsyncTask<Void,Void,Void>
+    {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            GetUsersFromDb();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            userAdapter.notifyDataSetChanged();
+        }
     }
 }
