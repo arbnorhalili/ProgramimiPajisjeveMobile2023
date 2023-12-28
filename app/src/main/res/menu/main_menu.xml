@@ -3,4 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/addNewUser"
         android:title="Shto perdorues"></item>
+    <item android:id="@+id/universityList"
+        android:title="Lista e universiteteve"></item>
 </menu>

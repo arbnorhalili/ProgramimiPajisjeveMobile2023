@@ -80,6 +80,12 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(MainActivity.this, UserActivity.class);
             startActivity(intent);
         }
+
+        if(item.getItemId()==R.id.universityList)
+        {
+            Intent intent = new Intent(MainActivity.this, UniversitiesActivity.class);
+            startActivity(intent);
+        }
         return true;
     }
 
