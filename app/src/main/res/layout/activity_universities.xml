@@ -26,6 +26,13 @@
             android:text="Kerko"
             android:id="@+id/btnSearch"></Button>
     </LinearLayout>
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:min="0"
+        android:max="100"
+        android:id="@+id/pbProgress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"></ProgressBar>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

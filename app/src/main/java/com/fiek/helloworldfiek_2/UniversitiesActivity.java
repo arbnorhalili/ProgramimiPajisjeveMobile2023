@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +35,10 @@ public class UniversitiesActivity extends AppCompatActivity
     Button btnSearch;
     OkHttpClient client;
     List<University> universityList = new ArrayList<>();
+    List<UniversityGson> universityGsonList = new ArrayList<>();
+    UniversityAdapter adapter;
+    ProgressBar pbProgress;
+    int min = 0, max = 100, initialValue = 10, increment = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +48,17 @@ public class UniversitiesActivity extends AppCompatActivity
         lvUnivesities = findViewById(R.id.lvUniversities);
         btnSearch = findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(this);
+        pbProgress = findViewById(R.id.pbProgress);
+
+        adapter = new UniversityAdapter(UniversitiesActivity.this);
+
+        lvUnivesities.setAdapter(adapter);
 
         client = new OkHttpClient();
-        CallUniversityList("Kosovo");
+        GetUniversitiesGson("Kosovo");
     }
 
-    private void CallUniversityList(String country)
+    private void GetUniversities(String country)
     {
         universityList = new ArrayList<>();
         Request.Builder builder =
@@ -95,8 +107,86 @@ public class UniversitiesActivity extends AppCompatActivity
         });
     }
 
+    private void GetUniversitiesGson(String country)
+    {
+        universityGsonList.clear();
+        pbProgress.setProgress(initialValue);
+        Request.Builder builder =
+                new Request.Builder()
+                        .get()
+                        .url("http://universities.hipolabs.com/search?country="+country);
+        Call call = client.newCall(builder.build());
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.i("FiekAppLog", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if(response.isSuccessful())
+                {
+                    String strResponse = response.body().string();
+                    try {
+                        JSONArray jsonArray = new JSONArray(strResponse);
+                        increment = (max-initialValue)/jsonArray.length();
+                        increment = increment<1?1:increment;
+                        for(int i=0;i<jsonArray.length();i++)
+                        {
+                            JSONObject tempObject = jsonArray.getJSONObject(i);
+                            Gson gson = new Gson();
+                            UniversityGson tempUniversity
+                                    = gson.fromJson(tempObject.toString(),UniversityGson.class);
+                            universityGsonList.add(tempUniversity);
+
+                            Thread.sleep(10);
+                            final int k = i;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(increment==1)
+                                    {
+                                        int currentValue = pbProgress.getProgress();
+                                        double incrementD = (double)(max-initialValue)/jsonArray.length();
+                                        double iterations = (double)1/incrementD;
+                                        if(k>0 && k%iterations==0)
+                                            pbProgress.setProgress(currentValue+increment);
+                                    }
+                                    else
+                                    {
+                                        int currentValue = pbProgress.getProgress();
+                                        pbProgress.setProgress(currentValue+increment);
+                                    }
+
+                                }
+                            });
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        Log.i("FiekAppLog", "Total: "+universityGsonList.size());
+                        adapter.universityGsonList = universityGsonList;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                pbProgress.setProgress(max);
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    Log.i("FiekAppLog", response.message());
+                }
+            }
+        });
+    }
+
     @Override
     public void onClick(View view) {
-        CallUniversityList(etCountry.getText().toString());
+        GetUniversitiesGson(etCountry.getText().toString());
     }
 }
