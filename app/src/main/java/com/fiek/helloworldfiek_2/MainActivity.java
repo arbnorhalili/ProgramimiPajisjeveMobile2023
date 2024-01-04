@@ -4,12 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -75,17 +80,28 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.addNewUser)
+
+        switch (item.getItemId())
         {
-            Intent intent = new Intent(MainActivity.this, UserActivity.class);
-            startActivity(intent);
+            case R.id.addNewUser:
+                Intent intent = new Intent(MainActivity.this, UserActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.universityList:
+                intent = new Intent(MainActivity.this, UniversitiesActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.logout:
+                ClearSharedPreferences();
+                intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            case R.id.onlineRadio:
+                intent = new Intent(MainActivity.this, OnlineRadioActivity.class);
+                startActivity(intent);
         }
 
-        if(item.getItemId()==R.id.universityList)
-        {
-            Intent intent = new Intent(MainActivity.this, UniversitiesActivity.class);
-            startActivity(intent);
-        }
         return true;
     }
 
@@ -174,4 +190,16 @@ public class MainActivity extends AppCompatActivity implements
             userAdapter.notifyDataSetChanged();
         }
     }
+
+    private void ClearSharedPreferences()
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                "FiekAppSharedPrefs", MODE_PRIVATE
+        );
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("Username");
+        editor.commit();
+    }
+
+
 }

@@ -5,4 +5,8 @@
         android:title="Shto perdorues"></item>
     <item android:id="@+id/universityList"
         android:title="Lista e universiteteve"></item>
+    <item android:id="@+id/onlineRadio"
+        android:title="Online Radio"></item>
+    <item android:id="@+id/logout"
+        android:title="Logout"></item>
 </menu>
