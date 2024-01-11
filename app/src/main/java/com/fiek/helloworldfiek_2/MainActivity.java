@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements
     TextView tvWelcome;
     ListView lvUsers;
     UserAdapter userAdapter;
+    AirplaneModeChangeReceiver airplaneModeChangeReceiver = new AirplaneModeChangeReceiver();
+    WirelessChangeReceiver wirelessChangeReceiver = new WirelessChangeReceiver();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,16 @@ public class MainActivity extends AppCompatActivity implements
 //                return false;
 //            }
 //        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        registerReceiver(airplaneModeChangeReceiver, intentFilter);
+
+        intentFilter = new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        registerReceiver(wirelessChangeReceiver, intentFilter);
     }
 
     @Override
